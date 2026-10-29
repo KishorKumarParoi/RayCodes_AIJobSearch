@@ -234,7 +234,12 @@ def run_crm_discovery_and_dispatch(batch_count: int = 20, send_live: bool = Fals
         delivery_status = "STAGED"
         dispatch_date = now_str
 
-        if smtp_conn:
+        # Zero-Bounce Guard: Validate domain and MX records
+        is_valid, validation_reason = founder_discovery.validate_recipient_email(founder_email, comp)
+        if not is_valid:
+            print(f"🛑 [Zero-Bounce Guard] Blocked dispatch for {comp} ({founder_email}): {validation_reason}")
+            delivery_status = f"BLOCKED: {validation_reason}"
+        elif smtp_conn:
             try:
                 msg = MIMEMultipart()
                 msg["From"] = f"{smtp_cfg['SENDER_NAME']} <{smtp_cfg['SMTP_USER']}>"

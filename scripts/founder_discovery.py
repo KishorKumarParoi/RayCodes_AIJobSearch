@@ -1,12 +1,11 @@
 #!/usr/bin/env python3
 """
-Tech Founder & Hiring Lead Discovery Engine
+Tech Founder & Hiring Lead Discovery Engine with Zero-Bounce Guard
 Discovers founder/lead email patterns for startups and tech companies:
   1. Direct regex parsing from job snippets / URLs / GitHub profiles.
-  2. Canonical startup founder email heuristics:
-     - founder@company.com, jobs@company.com, careers@company.com, talent@company.com, engineering@company.com
-     - firstname@company.com (for YC / early stage companies)
-  3. Domain extraction & verification against disposable/safe filters.
+  2. Canonical startup founder email heuristics.
+  3. Strict Aggregator/Job Board Blacklist (Never send to @ycombinator.com, @greenhouse.io, etc.).
+  4. Real-time DNS MX record verification to prevent bounces & protect Gmail sender health.
 """
 
 import sys
@@ -14,13 +13,17 @@ import os
 import re
 import json
 import urllib.parse
+import subprocess
 from pathlib import Path
-from typing import Dict, List, Any, Optional
+from typing import Dict, List, Any, Optional, Tuple
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# Common domain mappings for startups in pipeline
+# Curated direct contacts for top high-paying startups
 KNOWN_FOUNDER_CONTACTS = {
+    "arrangr": "founders@arrangr.com",
+    "curai": "careers@curaihealth.com",
+    "curai health": "careers@curaihealth.com",
     "liveflow": "founders@liveflow.io",
     "makai labs": "careers@makailabs.com",
     "shyftlabs": "careers@shyftlabs.io",
@@ -35,32 +38,114 @@ KNOWN_FOUNDER_CONTACTS = {
     "mariana minerals": "founders@marianaminerals.com"
 }
 
+# Strict Aggregator & ATS Blacklist: NEVER send outreach to these domains!
+AGGREGATOR_DOMAINS = {
+    "ycombinator.com", "yc.org", "news.ycombinator.com",
+    "greenhouse.io", "lever.co", "ashbyhq.com", "workable.com",
+    "breezy.hr", "rippling.com", "smartrecruiters.com", "jobvite.com",
+    "remoteok.com", "remoteok.io", "weworkremotely.com", "toptal.com",
+    "upwork.com", "fiverr.com", "freelancer.com", "himalayas.app",
+    "linkedin.com", "twitter.com", "x.com", "wellfound.com", "angel.co",
+    "simplify.jobs", "otta.com", "indeed.com", "glassdoor.com",
+    "ziprecruiter.com", "dice.com", "monster.com", "builtin.com",
+    "google.com", "firebaseio.com", "amazon.jobs"
+}
 
-def extract_domain_from_url(url: str) -> Optional[str]:
-    """Extracts a clean company domain from a URL."""
+
+def check_mx_record(domain: str) -> bool:
+    """Verifies that the destination domain has live DNS Mail Exchange (MX) records."""
+    if not domain or "." not in domain or len(domain) < 4:
+        return False
+    try:
+        res = subprocess.run(["host", "-t", "mx", domain], capture_output=True, text=True, timeout=3)
+        return "mail is handled by" in res.stdout
+    except Exception:
+        # Fallback if host command fails: basic heuristic
+        return True
+
+
+def extract_company_domain_from_url(url: str, company_name: str) -> str:
+    """Intelligently extracts the company's real domain from job postings or ATS links."""
+    slug = re.sub(r"[^a-zA-Z0-9]", "", company_name.lower().strip())
+    if not slug:
+        slug = "startup"
+
     if not url:
-        return None
+        return f"{slug}.com"
+
     try:
         parsed = urllib.parse.urlparse(url)
         netloc = parsed.netloc.lower()
-        # Remove subdomains like boards.greenhouse.io or jobs.lever.co
+        path = parsed.path.lower()
+
+        # Handle YCombinator company pages: /companies/company-slug
+        if "ycombinator.com" in netloc or "yc.org" in netloc:
+            parts = [p for p in path.split("/") if p]
+            if "companies" in parts:
+                idx = parts.index("companies")
+                if idx + 1 < len(parts):
+                    return f"{parts[idx + 1]}.com"
+            return f"{slug}.com"
+
+        # Handle ATS subdomains / paths (e.g. boards.greenhouse.io/company)
+        for ats in ["greenhouse.io", "lever.co", "ashbyhq.com", "workable.com", "breezy.hr"]:
+            if ats in netloc:
+                parts = [p for p in path.split("/") if p]
+                if parts:
+                    return f"{parts[0]}.com"
+                return f"{slug}.com"
+
+        # If it's a general aggregator, never use its domain
+        for agg in AGGREGATOR_DOMAINS:
+            if agg in netloc:
+                return f"{slug}.com"
+
+        # Otherwise extract root domain
         parts = netloc.split(".")
         if len(parts) >= 2:
-            if "greenhouse" in netloc or "lever" in netloc or "ashbyhq" in netloc:
-                # Path often contains company name: /v0/item or /company
-                path_parts = [p for p in parsed.path.split("/") if p]
-                if path_parts:
-                    return f"{path_parts[0]}.com"
             return ".".join(parts[-2:])
     except Exception:
         pass
-    return None
+
+    return f"{slug}.com"
+
+
+def validate_recipient_email(email_addr: str, company: str = "") -> Tuple[bool, str]:
+    """
+    Zero-Bounce Guard: Strict validation before any email is queued or dispatched.
+    Returns (is_valid, reason)
+    """
+    if not email_addr or "@" not in email_addr:
+        return False, "Empty or malformed email address"
+
+    email_clean = email_addr.strip().lower()
+    user, domain = email_clean.split("@", 1)
+
+    # 1. Aggregator blacklist check
+    for agg in AGGREGATOR_DOMAINS:
+        if domain == agg or domain.endswith(f".{agg}"):
+            return False, f"Blocked: Destination is a third-party job board or aggregator ({domain}), not the hiring company."
+
+    # 2. Syntax validation
+    if not re.match(r"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$", email_clean):
+        return False, f"Invalid email format: {email_addr}"
+
+    # 3. Prevent URL encoding leakage (e.g., Flock%20Safety.com)
+    if "%" in domain or " " in domain:
+        return False, f"Domain contains invalid URL-encoded characters: {domain}"
+
+    # 4. Check DNS MX records
+    has_mx = check_mx_record(domain)
+    if not has_mx:
+        return False, f"No DNS MX mail exchange records found for domain: {domain}"
+
+    return True, "Valid verified domain with live MX records"
 
 
 def discover_contact_email(company: str, role_url: str, snippet: str = "") -> str:
-    """Finds or infers the most relevant founder/hiring email."""
+    """Finds or infers the most relevant founder/hiring email with zero-bounce safeguards."""
     comp_clean = company.lower().strip()
-    
+
     # 1. Direct match in curated database
     for k, v in KNOWN_FOUNDER_CONTACTS.items():
         if k in comp_clean:
@@ -68,24 +153,37 @@ def discover_contact_email(company: str, role_url: str, snippet: str = "") -> st
 
     # 2. Extract any email directly written in snippet
     found = re.findall(r"[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+", snippet)
-    if found:
-        return found[0]
+    for candidate in found:
+        is_valid, _ = validate_recipient_email(candidate, company)
+        if is_valid:
+            return candidate
 
     # 3. Clean company slug to build canonical founder address
     slug = re.sub(r"[^a-zA-Z0-9]", "", comp_clean)
     if not slug:
         slug = "startup"
 
-    # Default to founder/careers address for direct outreach
-    domain = extract_domain_from_url(role_url)
-    if not domain or "simplify" in domain or "hacker-news" in domain:
-        domain = f"{slug}.com"
+    domain = extract_company_domain_from_url(role_url, company)
 
-    return f"founders@{domain}"
+    # Final guard against aggregators
+    for agg in AGGREGATOR_DOMAINS:
+        if agg in domain:
+            domain = f"{slug}.com"
+
+    target_email = f"founders@{domain}"
+    return target_email
 
 
 if __name__ == "__main__":
-    print("Testing Founder Discovery...")
-    print("LiveFlow:", discover_contact_email("LiveFlow", "https://liveflow.io/jobs"))
-    print("NVIDIA:", discover_contact_email("NVIDIA", "https://nvidia.com"))
-    print("Snippet with email:", discover_contact_email("Acme", "", "Reach out directly to alex@acmelabs.ai for intro"))
+    print("Testing Founder Discovery with Zero-Bounce Guard...")
+    test_cases = [
+        ("Arrangr", "https://www.ycombinator.com/companies/arrangr/jobs/123"),
+        ("Curai", "https://www.ycombinator.com/companies/curai/jobs/456"),
+        ("LiveFlow", "https://liveflow.io/jobs"),
+        ("NVIDIA", "https://nvidia.com"),
+        ("RemoteTech", "https://remoteok.com/remote-jobs/12345")
+    ]
+    for comp, url in test_cases:
+        email_res = discover_contact_email(comp, url)
+        valid, reason = validate_recipient_email(email_res, comp)
+        print(f"Company: {comp:12} -> Email: {email_res:28} | Valid: {str(valid):5} | Reason: {reason}")

@@ -206,12 +206,14 @@ def fetch_live_imap_emails(creds: Dict[str, str], max_emails: int = 25) -> List[
         mail.login(user, password)
         mail.select("INBOX")
 
-        # Search for recent messages in last 7 days
-        status, messages = mail.search(None, '(SINCE "01-Jan-2026")')
-        if status != "OK":
-            return []
-
-        message_ids = messages[0].split()
+        # Search for UNSEEN first, then fallback to most recent messages
+        status, messages = mail.search(None, 'UNSEEN')
+        message_ids = messages[0].split() if status == "OK" and messages[0] else []
+        if not message_ids:
+            status, messages = mail.search(None, 'ALL')
+            if status == "OK" and messages[0]:
+                all_ids = messages[0].split()
+                message_ids = all_ids[-max_emails:]
         # Take most recent
         for mid in reversed(message_ids[-max_emails:]):
             res, data = mail.fetch(mid, "(RFC822)")
@@ -341,8 +343,15 @@ def sync_emails_and_update_records() -> Dict[str, Any]:
                         app["interview_date"] = f"Booking link: {link_match.group(1)}"
 
                 note_msg = f"Email received ({resp_cat}): {summary[:60]}"
-                if note_msg not in app.get("notes", []):
-                    app.setdefault("notes", []).append(note_msg)
+                notes = app.get("notes")
+                if isinstance(notes, list):
+                    if note_msg not in notes:
+                        notes.append(note_msg)
+                elif isinstance(notes, str) and notes:
+                    if note_msg not in notes:
+                        app["notes"] = f"{notes} | {note_msg}"
+                else:
+                    app["notes"] = [note_msg]
 
                 updated_count += 1
                 updates_log.append({

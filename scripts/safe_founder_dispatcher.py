@@ -154,6 +154,14 @@ def run_safe_outreach(batch_limit: int = 10, min_interval_sec: int = 45, max_int
         # Truth & Safety Verification
         print("   🛡️ Fact Guard audit passed (100% verified credentials)")
 
+        # Zero-Bounce Guard: Validate Recipient Domain and DNS MX Records
+        is_valid, validation_reason = founder_discovery.validate_recipient_email(email_addr, company)
+        if not is_valid:
+            print(f"   🛑 [Zero-Bounce Guard] Blocked dispatch to {email_addr} — {validation_reason}")
+            founder["mail_sent"] = False
+            founder["delivery_status"] = f"BLOCKED: {validation_reason}"
+            continue
+
         if live_send and is_smtp_ready:
             try:
                 msg = MIMEMultipart()
@@ -161,6 +169,21 @@ def run_safe_outreach(batch_limit: int = 10, min_interval_sec: int = 45, max_int
                 msg["To"] = email_addr
                 msg["Subject"] = pitch["subject"]
                 msg.attach(MIMEText(pitch["body"], "plain"))
+
+                # Attach Verified Executive Resumes (1-Page Visual & 2-Page ATS)
+                from email.mime.application import MIMEApplication
+                p1 = BASE_DIR / "resume.pdf"
+                p2 = BASE_DIR / "resume_single_column.pdf"
+                if p1.exists():
+                    with open(p1, "rb") as fp:
+                        a1 = MIMEApplication(fp.read(), _subtype="pdf")
+                        a1.add_header("Content-Disposition", "attachment", filename="Kishor_Kumar_Paroi_1Page_Visual_Resume.pdf")
+                        msg.attach(a1)
+                if p2.exists():
+                    with open(p2, "rb") as fp:
+                        a2 = MIMEApplication(fp.read(), _subtype="pdf")
+                        a2.add_header("Content-Disposition", "attachment", filename="Kishor_Kumar_Paroi_Single_Column_ATS_Resume.pdf")
+                        msg.attach(a2)
 
                 with smtplib.SMTP(smtp_cfg["SMTP_SERVER"], int(smtp_cfg["SMTP_PORT"])) as server:
                     server.starttls()
@@ -197,6 +220,12 @@ def run_safe_outreach(batch_limit: int = 10, min_interval_sec: int = 45, max_int
 
 
 if __name__ == "__main__":
-    count = int(sys.argv[1]) if len(sys.argv) > 1 else 5
+    if "--help" in sys.argv or "-h" in sys.argv:
+        print("Usage: python3 safe_founder_dispatcher.py [count] [--live] [--min-delay SEC] [--max-delay SEC]")
+        print("  count: number of founders to process (default: 5)")
+        print("  --live: actually send via Gmail SMTP (default: stage only)")
+        sys.exit(0)
+    args = [a for a in sys.argv[1:] if not a.startswith("--")]
+    count = int(args[0]) if args else 5
     live = "--live" in sys.argv
     run_safe_outreach(batch_limit=count, min_interval_sec=45, max_interval_sec=75, live_send=live)
