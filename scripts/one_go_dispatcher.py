@@ -41,6 +41,7 @@ import email_drafter
 import fact_guard
 import tracker
 import excel_tracker
+import project_matcher
 
 
 def load_smtp_config() -> Dict[str, str]:
@@ -69,62 +70,13 @@ def load_smtp_config() -> Dict[str, str]:
 
 
 def build_curated_pitch(item: Dict[str, Any]) -> Dict[str, str]:
-    company = item.get("company", "the team")
-    role = item.get("title", "AI Systems Architect / Forward Deployed Engineer")
-    recipient_name = item.get("contact_name", "Founding & Engineering Team")
-    platform = item.get("platform", "Direct")
-
-    subject = f"Solving low-latency AI & Agent Infrastructure for {company} — Kishor Kumar Paroi"
-
-    body = f"""Hi {recipient_name},
-
-I've been following {company}'s engineering journey and wanted to reach out directly regarding your {role} needs (discovered via {platform}).
-
-I am an AI Systems Architect & Forward Deployed Engineer (Founder @ KoomAI). I build high-throughput, sub-millisecond distributed AI systems and zero-trust agent meshes:
-
-🚀 PROUD FLAGSHIP: KoomAI (https://koom.kishor.tech)
-Architected an enterprise 20-agent autonomous mesh serving as a one-stop freelancer powerhouse:
-• Sub-120ms glass-to-glass WebRTC high-performance video communication & neural transcription.
-• Autonomous agentic job hunter, automated candidate briefing & ATS resume tailor.
-• NotebookLLM-grade deep research synthesis, multimodal document arbitration, and instant global escrow payouts.
-• 24/7 personal executive assistant mesh sustaining 50,000+ recording minutes.
-
-⚡ 4 TARGET ARCHITECTURE PROOFS (Matched to {role}):
-1. Autonomous LangGraph Agent Mesh (phi0.ai): 99.4% task completion across enterprise workloads, saving $18K/month in compute: https://github.com/KishorKumarParoi/AI_Security_Production_App
-2. Sub-35ms Hybrid RAG Engine: Multi-stage re-ranking (FlashRank local ONNX + BM25 sparse + dense) with zero hallucination: https://github.com/KishorKumarParoi/AI_Security_Production_App#benchmarks
-3. High-Throughput vLLM GPU Serving (Samsung AI Core): Scaled 8B/70B LLMs on NVIDIA H100 clusters with FlashAttention-2, fused CUDA kernels & DeepSpeed ZeRO-3: https://github.com/KishorKumarParoi/AI-Engineering
-4. Sub-0.5ms Rust SIMD Vector Engine: High-speed AVX-512 vector similarity search with 50x throughput over standard Python implementations: https://github.com/KishorKumarParoi
-
-📚 VERIFIED CURRICULUM & JOURNEY PROOFS:
-• Full 38-Module AI Curriculum & Blueprints: https://github.com/KishorKumarParoi/AI-Engineering
-• Complete Open-Source Repository Suite: https://github.com/KishorKumarParoi
-
-VERIFIED PORTFOLIOS & LIVE SYSTEMS:
-• Minimalist Academic Dossier: https://kishor.tech
-• 3D Interactive Spatial Cockpit: https://3d.kishor.tech
-• 3D Cyber Hacker Station: https://hacker.kishor.tech
-• 1-Page Visual Resume (PDF): https://kishor.tech/resume.pdf
-• 2-Page ATS Dossier (PDF): https://kishor.tech/resume_single_column.pdf
-
-═════════════════════════════════════════════════════════════════
-📅 1-CLICK INSTANT CALL (15-MIN ZOOM) OR DIRECT WHATSAPP:
-═════════════════════════════════════════════════════════════════
-• Calendar (Instant Zoom): https://calendly.com/kishor-ruet-cse/15min
-• WhatsApp Direct 1-Click Message: https://wa.me/8801724714156?text=Hi%20Kishor,%20I%20saw%20your%20pitch%20for%20{company}
-
-I have attached both my 1-Page Visual Resume (resume.pdf) and 2-Page Single-Column ATS Resume (resume_single_column.pdf) for your review.
-
-Looking forward to taking your technical assessment or solving your backlog this week.
-
-Warm regards,
-
-Kishor Kumar Paroi
-Principal AI Systems Architect | Founder @ KoomAI
-B.Sc. in Computer Science & Engineering (RUET)
-Email: kishor.ruet.cse@gmail.com | WhatsApp: +8801724714156
-LinkedIn: https://linkedin.com/in/kishor-kumar-paroi-b06344166
-"""
-    return {"subject": subject, "body": body}
+    company = item.get("company", "Company")
+    role = item.get("title", item.get("role", "AI Systems Architect / Forward Deployed Engineer"))
+    email_addr = item.get("contact_email", item.get("email", ""))
+    notes = item.get("notes", "")
+    if isinstance(notes, list):
+        notes = " ".join(notes)
+    return project_matcher.generate_curated_cold_email(company, role, email_addr, str(notes))
 
 
 def run_one_go_dispatch(

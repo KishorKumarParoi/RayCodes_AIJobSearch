@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 """
-Hyper-Irresistible Recruiter & Founder Outreach Engine
+Hyper-Irresistible Recruiter & Founder Outreach Engine with 15 Verified Projects
 Architected for:
   - 3-5 Second Attention Span Shortlisting
   - Radical Risk Inversion: "2-Week Free Production Trial on your toughest bottleneck" + "Immediate Assessment Test"
   - 'Jack of All Trades, Master of Many' positioning (Compiler/SIMD -> AI RAG -> Lakehouse -> 3D WebGL)
-  - One-Click 15-Minute Calendly / Zoom Booking Integration
-  - Deep Dynamic Project Mapping (2-3 Core AI/Systems Matches + 2-3 Surprising Cross-Domain Feats)
+  - 1-Click WhatsApp Direct Chat & Calendly 15-Minute Zoom Booking Integration
+  - Deep Dynamic Project Mapping across all 15 Production Projects from Master Resume & GitHub README
 """
 
 import sys
@@ -14,154 +14,260 @@ import re
 import urllib.parse
 from typing import Dict, List, Any, Tuple
 
-# Full Spectrum Portfolio from Kishor's Master Resume & Architect Journey
-ALL_PROJECTS = {
-    # Core AI & Systems Matches
-    "AGENTIC_RAG": {
-        "title": "Enterprise AI Security & Production Agentic RAG Platform",
-        "url": "https://github.com/KishorKumarParoi/AI_Security_Production_App",
-        "category": "core_ai",
-        "metric": "Sub-35ms Hybrid RAG (Dense HNSW + BM25 + FlashRank ONNX) + 5 concurrent LangGraph cyclic agents with FastMCP tool execution. Reduced LLM token bills by $18K/mo."
+# All 15 Verified Flagship Projects from Master Resume & GitHub README
+ALL_15_PROJECTS = {
+    "1_ZOMATO_LAKEHOUSE": {
+        "id": 1,
+        "title": "Zomato AI Lakehouse & Multimodal Dispute Platform",
+        "url": "https://github.com/KishorKumarParoi/zomato-analysis",
+        "stack": "Snowflake • PySpark Delta Lake • dbt SCD-2 • Feast Feature Store • Computer Vision Anti-Fraud",
+        "metric": "Ingested 35M+ orders (2.3 GB); slashed warehouse compute by 42% ($18K/mo); neutralized refund dispute fraud by 68% ($1.2M saved).",
+        "tags": ["lakehouse", "spark", "pyspark", "snowflake", "delta lake", "dbt", "data", "etl", "feast", "computer vision", "redis", "kafka", "debezium"]
     },
-    "LLMOPS_VLLM": {
+    "2_HYBRID_ANIME_LLMOPS": {
+        "id": 2,
         "title": "Hybrid Anime Intelligence & Continuous LLMOps Platform",
         "url": "https://github.com/KishorKumarParoi/Hybrid-Anime-Recommender",
-        "category": "core_ai",
-        "metric": "Low-latency continuous batching with vLLM & dynamic multi-LoRA switching (<30ms). High-throughput Rust 1.85 & Go gRPC gateways delivering 3.8x throughput on >32K contexts."
+        "stack": "Polyglot Mesh (Rust SIMD / Go 1.24 / FastAPI) • Dynamic Multi-LoRA vLLM • RSLoRA Flywheel",
+        "metric": "Sub-0.5ms vector scoring via Rust SIMD (50x speedup over Python); 68% GPU cost reduction with vLLM Multi-LoRA continuous batching; NDCG@10 = 0.94.",
+        "tags": ["rust", "simd", "vllm", "lora", "fine-tuning", "llmops", "go", "fastapi", "kafka", "inference", "gpu", "recommendation"]
     },
-    "LAKEHOUSE_SPARK": {
-        "title": "Zomato AI Lakehouse & Real-time MLOps Platform",
-        "url": "https://github.com/KishorKumarParoi/zomato-analysis",
-        "category": "core_ai",
-        "metric": "35M+ records Medallion Lakehouse with PySpark, Delta Lake, Snowflake, and Feast Feature Store (<10ms point-in-time lookup for online inference)."
-    },
-    "EDGE_SIMD": {
-        "title": "Smart Manufacturing Edge AI & Vibration Defect Platform",
-        "url": "https://github.com/KishorKumarParoi",
-        "category": "core_ai",
-        "metric": "Rust 1.85 SIMD edge pre-filters cutting compute latency by >40% + sub-20ms PyTorch CNN defect vision saving $420K annually in scrap waste."
-    },
-    # Surprising Cross-Domain Feats (Proving "Jack of All Trades, Master of Many")
-    "FOUNDER_KOOMAI": {
-        "title": "KoomAI — Asynchronous Video Intelligence Platform (Live Startup)",
-        "url": "https://koom.kishor.tech",
-        "category": "cross_domain",
-        "metric": "Solo-built full-stack startup: WebRTC SVC media engine (<120ms latency), Electron desktop app, Chrome Extension, Next.js 16, and AWS S3/CloudFront CDN."
-    },
-    "GRAPHICS_3D": {
-        "title": "3D Interactive WebGL Spatial Universe",
-        "url": "https://3d.kishor.tech",
-        "category": "cross_domain",
-        "metric": "60 FPS custom physics and shader rendering using Three.js & React Three Fiber — combining deep systems optimization with spatial interactive design."
-    },
-    "RUST_GIT": {
-        "title": "Git Engine Built from Scratch in Rust",
-        "url": "https://github.com/KishorKumarParoi",
-        "category": "cross_domain",
-        "metric": "Implemented custom SHA-1 content-addressable storage, tree delta hashing, and zlib compression protocols with zero third-party dependencies."
-    },
-    "AI_SECURITY": {
-        "title": "Defense-in-Depth AI Security Gateway & PyRIT Red-Teaming",
+    "3_ENTERPRISE_AI_SECURITY": {
+        "id": 3,
+        "title": "Enterprise AI Security & Production Agentic RAG Platform",
         "url": "https://github.com/KishorKumarParoi/AI_Security_Production_App",
-        "category": "cross_domain",
-        "metric": "NVIDIA NeMo Guardrails, autonomous PII scrubbing, BotShield WAF, and automated adversarial jailbreak evaluation."
+        "stack": "Zero-Trust AI Gateway • NVIDIA NeMo Guardrails • LangGraph • FastMCP • BotShield WAF",
+        "metric": "Sub-35ms Hybrid RAG (Qdrant + BM25 + FlashRank ONNX); blocked 95%+ prompt injections (Microsoft PyRIT); saved $8.4K/mo (42%) via semantic similarity caching.",
+        "tags": ["rag", "agent", "langgraph", "security", "guardrails", "nemo", "fastmcp", "hitl", "llm", "genai", "waf", "qdrant", "onnx"]
+    },
+    "4_SMART_MANUFACTURING": {
+        "id": 4,
+        "title": "Smart Manufacturing Industrial AI & Multi-Cloud MLOps",
+        "url": "https://github.com/KishorKumarParoi/smart-manufacturing",
+        "stack": "Rust Edge SIMD • PyTorch Autoencoders • GKE / K3s CNCF • ArgoCD GitOps • TensorRT INT8",
+        "metric": "Sub-20ms PyTorch CNN defect classification; reduced defect escape by 31% ($420K annual scrap savings); automated 12-stage ArgoCD GitOps CI/CD.",
+        "tags": ["manufacturing", "edge", "rust", "simd", "pytorch", "argocd", "gitops", "k8s", "kubernetes", "gke", "tensorrt", "mlops"]
+    },
+    "5_NEXUS_AI_LAKEHOUSE": {
+        "id": 5,
+        "title": "Nexus-AI: Enterprise Multi-Cloud Lakehouse & Autonomous Agent Mesh",
+        "url": "https://github.com/KishorKumarParoi/Nexus_AI",
+        "stack": "Medallion Lakehouse (Bronze-Silver-Gold) • 5-Agent LangGraph Mesh • DuckDB • Terraform",
+        "metric": "5-agent LangGraph mesh accelerated analytics turnaround by 82%; DuckDB compressed dashboard query latencies from 4.5s to <120ms across AWS, GCP, and Azure.",
+        "tags": ["lakehouse", "duckdb", "langgraph", "agent", "agents", "terraform", "aws", "gcp", "azure", "multi-cloud", "nl2sql"]
+    },
+    "6_ADVANCED_AI_CHATBOT": {
+        "id": 6,
+        "title": "Advanced AI Chatbot: Enterprise Autonomous Agent & HITL Platform",
+        "url": "https://github.com/KishorKumarParoi/Advanced_AI_Chatbot_Project",
+        "stack": "LangGraph Cyclic State Machine • FastMCP • HITL Financial Gating • BotShield WAF",
+        "metric": "Multi-turn thread persistence with dynamic rollbacks; FastMCP approval gates on transactions >$50; <12ms semantic caching saving $3.2K/mo.",
+        "tags": ["chatbot", "conversational", "langgraph", "fastmcp", "hitl", "agent", "agents", "waf", "qdrant", "redis"]
+    },
+    "7_DATA_AGENT_BI": {
+        "id": 7,
+        "title": "Data Agent: Multi-Agent Business Intelligence & Self-Healing SQL",
+        "url": "https://github.com/KishorKumarParoi/Data-Agent",
+        "stack": "Hierarchical LangGraph Mesh • Self-Healing SQL LLM Judge • ReAct ETL Sandbox",
+        "metric": "96.2% query routing accuracy; LLM security judge auto-heals 89% of initial SQL errors and intercepts 100% of injection attacks; cuts pipeline cycles by 75%.",
+        "tags": ["data agent", "sql", "nl2sql", "langgraph", "bi", "etl", "react", "pandas", "analytics", "agent"]
+    },
+    "8_NETWORK_SECURITY_ETL": {
+        "id": 8,
+        "title": "Advanced Network Security Medallion Lakehouse & Distributed ML",
+        "url": "https://github.com/KishorKumarParoi/Advanced_ETL_Project",
+        "stack": "Azure Data Factory (ADF v2) • ADLS Gen2 • Databricks Spark • Synapse CETAS • Sub-4ms ML",
+        "metric": "Processes 1.4B security logs with dynamic partition pruning and Z-Order clustering; containerized ONNX inference reduced p99 latency by 11.8x.",
+        "tags": ["azure", "databricks", "spark", "adls", "synapse", "etl", "lakehouse", "security", "distributed", "onnx"]
+    },
+    "9_AWS_SAGEMAKER_MLOPS": {
+        "id": 9,
+        "title": "AWS SageMaker End-to-End MLOps Pipeline & Governance Platform",
+        "url": "https://github.com/KishorKumarParoi/Aws-Sagemaker",
+        "stack": "SageMaker Pipelines (DAG) • Managed Spot Training • Model Registry • DataCaptureConfig",
+        "metric": "Automated SageMaker DAG with Managed Spot training slashing costs by 70%; autoscaling serverless endpoints sustaining 2,500 req/s with automated drift alerts.",
+        "tags": ["sagemaker", "aws", "mlops", "pipeline", "spot", "model registry", "drift", "governance", "kms"]
+    },
+    "10_REALTIME_MLOPS_KSERVE": {
+        "id": 10,
+        "title": "Cloud-Native Real-Time MLOps: KServe, AWS ECS Fargate & Kubernetes",
+        "url": "https://github.com/KishorKumarParoi/realtime-mlops",
+        "stack": "KServe v1beta1 • AWS ECS Fargate • Kubernetes • Modular Terraform IaC • Trivy CVE",
+        "metric": "Scale-to-zero serverless inference cutting idle compute spend by 65%; 90/10 canary traffic routing with automated Prometheus latency rollbacks (>25ms).",
+        "tags": ["kserve", "kubernetes", "k8s", "ecs", "fargate", "terraform", "mlops", "serving", "serverless", "devops"]
+    },
+    "11_RUST_GIT_ENGINE": {
+        "id": 11,
+        "title": "Core Systems Engineering: Rust Git Engine & POSIX Terminal Shell",
+        "url": "https://github.com/KishorKumarParoi/codecrafters-git-rust",
+        "stack": "Rust 1.85 Bare-Metal • SHA-1 DAG Graph • SIMD Zlib Decompression • Zero-Copy I/O",
+        "metric": "Matches C Git performance with 100% memory safety; zero-copy packfile parsing via memmap2 (<14MB RSS); 10M fuzz test iterations with zero crash.",
+        "tags": ["rust", "systems", "git", "posix", "compiler", "simd", "low-level", "zero-copy", "performance"]
+    },
+    "12_USER_SURVIVAL_MLOPS": {
+        "id": 12,
+        "title": "User Survival Prediction & MLOps Infrastructure Platform",
+        "url": "https://github.com/KishorKumarParoi/User-Survival-Prediction",
+        "stack": "Astro Airflow DAGs • Redis Low-Latency Feature Store • Alibi Detect KS Drift • Prometheus & Grafana",
+        "metric": "Automated Airflow ETL to Redis Feature Store (<2ms retrieval); continuous Kolmogorov-Smirnov drift alarms; 88.9% holdout accuracy model.",
+        "tags": ["airflow", "redis", "feature store", "drift", "prometheus", "grafana", "mlops", "classification"]
+    },
+    "13_KOOMAI_VIDEO_AI": {
+        "id": 13,
+        "title": "Koom-AI: Enterprise Video Intelligence & Workspace Platform",
+        "url": "https://github.com/KishorKumarParoi/koom-ai",
+        "stack": "Next.js 16 App Router • Manifest V3 Chrome Extension • WebRTC SVC Media Engine • Stripe Connect",
+        "metric": "Sub-120ms glass-to-glass latency across 50,000+ recording minutes; 20-agent LangGraph copilot mesh; $24K MRR enterprise pilot adoption.",
+        "tags": ["webrtc", "video", "fullstack", "next.js", "chrome extension", "streaming", "startup", "founder", "audio"]
+    },
+    "14_REINVENT_3D_PLATFORM": {
+        "id": 14,
+        "title": "re:invent: Interactive 3D Platform & Real-Time Visitor Telemetry",
+        "url": "https://github.com/KishorKumarParoi/re-invent",
+        "stack": "React 19.2 • Three.js • GSAP 3.13 • Rolldown Vite • Supabase PostgreSQL Telemetry",
+        "metric": "60 FPS custom WebGL spatial camera choreography; live visitor telemetry engine with anti-tamper rate limiting serving global analytics in <100ms.",
+        "tags": ["three.js", "webgl", "3d", "react", "gsap", "frontend", "vite", "supabase", "graphics"]
+    },
+    "15_MACOS_TAHOE_PORTFOLIO": {
+        "id": 15,
+        "title": "macOS Tahoe: Interactive Apple Silicon OS Portfolio in React & GSAP",
+        "url": "https://github.com/KishorKumarParoi/macos-portofolio",
+        "stack": "React 19 • GSAP Draggable • Minimax AI Chess Engine • Fire Particle Terminal • ATS Resume",
+        "metric": "Full desktop OS recreation with fluid window stacking, minimax computer AI chess engine, interactive CLI particle terminal, and sub-100ms Edge CDN delivery.",
+        "tags": ["react", "frontend", "macos", "os", "chess", "minimax", "gsap", "desktop", "ui", "ux"]
     }
 }
 
 
-def select_curated_project_suite(job_title: str, job_snippet: str = "") -> Tuple[List[Dict[str, str]], List[Dict[str, str]]]:
-    """Selects 2-3 matched core projects + 2 surprising cross-domain projects."""
-    blob = f"{job_title} {job_snippet}".lower()
-    
-    # 1. Matched Core Projects
-    matched = []
-    if any(k in blob for k in ["rag", "agent", "llm", "genai", "security", "guardrail"]):
-        matched.append(ALL_PROJECTS["AGENTIC_RAG"])
-    if any(k in blob for k in ["vllm", "inference", "quantization", "fine-tuning", "lora", "serving", "mlops"]):
-        matched.append(ALL_PROJECTS["LLMOPS_VLLM"])
-    if any(k in blob for k in ["data", "spark", "lakehouse", "snowflake", "databricks", "etl", "kafka", "dbt"]):
-        matched.append(ALL_PROJECTS["LAKEHOUSE_SPARK"])
-    if any(k in blob for k in ["rust", "simd", "c++", "systems", "edge", "hardware", "performance"]):
-        matched.append(ALL_PROJECTS["EDGE_SIMD"])
+def score_project_relevance(project: Dict[str, Any], query_text: str) -> int:
+    query_lower = query_text.lower()
+    score = 0
+    # Match tags
+    for tag in project.get("tags", []):
+        if tag in query_lower:
+            score += 10
+    # Match title & stack words
+    title_words = project.get("title", "").lower().split()
+    for w in title_words:
+        if len(w) > 3 and w in query_lower:
+            score += 5
+    stack_words = project.get("stack", "").lower().split()
+    for w in stack_words:
+        if len(w) > 3 and w in query_lower:
+            score += 4
+    return score
 
-    # Guarantee at least 2 matched
-    if len(matched) < 2:
-        for p in [ALL_PROJECTS["AGENTIC_RAG"], ALL_PROJECTS["LAKEHOUSE_SPARK"], ALL_PROJECTS["LLMOPS_VLLM"]]:
-            if p not in matched:
-                matched.append(p)
-            if len(matched) >= 3:
-                break
-    matched = matched[:3]
 
-    # 2. Outside Expertise / Cross-Domain Projects
-    outside = []
-    for p_key in ["FOUNDER_KOOMAI", "GRAPHICS_3D", "RUST_GIT", "AI_SECURITY"]:
-        candidate = ALL_PROJECTS[p_key]
-        if candidate not in matched:
-            outside.append(candidate)
-        if len(outside) >= 2:
+def select_curated_project_suite(job_title: str, job_snippet: str = "") -> Tuple[List[Dict[str, Any]], List[Dict[str, Any]]]:
+    """
+    Intelligently scores all 15 projects against the target role and selects:
+      - 4 Best-Matched Core Architecture Proofs (with direct GitHub repo links & verified metrics)
+      - 3 High-Impact Cross-Domain Feats (demonstrating breadth & founder execution)
+    """
+    search_context = f"{job_title} {job_snippet}".lower()
+
+    scored = []
+    for key, p in ALL_15_PROJECTS.items():
+        relevance = score_project_relevance(p, search_context)
+        scored.append((relevance, p))
+
+    # Sort descending by relevance
+    scored.sort(key=lambda x: x[0], reverse=True)
+
+    # Top 4 matched projects
+    matched = [item[1] for item in scored[:4]]
+
+    # Ensure baseline flagship projects are represented if relevance is low
+    matched_ids = {p["id"] for p in matched}
+    fallback_priority = [3, 2, 1, 13]  # AI Security, vLLM/Rust, Zomato, KoomAI
+    for fid in fallback_priority:
+        if len(matched) < 4:
+            cand = next((p for p in ALL_15_PROJECTS.values() if p["id"] == fid), None)
+            if cand and cand["id"] not in matched_ids:
+                matched.append(cand)
+                matched_ids.add(cand["id"])
+
+    # 3 Distinct Cross-Domain Projects outside the top 4
+    cross = []
+    cross_candidates = [
+        ALL_15_PROJECTS["13_KOOMAI_VIDEO_AI"],
+        ALL_15_PROJECTS["11_RUST_GIT_ENGINE"],
+        ALL_15_PROJECTS["14_REINVENT_3D_PLATFORM"],
+        ALL_15_PROJECTS["15_MACOS_TAHOE_PORTFOLIO"],
+        ALL_15_PROJECTS["4_SMART_MANUFACTURING"],
+        ALL_15_PROJECTS["10_REALTIME_MLOPS_KSERVE"]
+    ]
+    for c in cross_candidates:
+        if c["id"] not in matched_ids:
+            cross.append(c)
+        if len(cross) >= 3:
             break
 
-    return matched, outside
+    return matched, cross
 
 
 def generate_curated_cold_email(company: str, role_title: str, recipient_email: str, snippet: str = "") -> Dict[str, str]:
     matched_projs, cross_projs = select_curated_project_suite(role_title, snippet)
 
     matched_text = "\n".join([
-        f"  ▶ {p['title']} ({p['url']})\n    ↳ {p['metric']}" for p in matched_projs
+        f"  {idx}. {p['title']}\n     🔗 Repository: {p['url']}\n     ⚙️ Stack: {p['stack']}\n     📈 Impact: {p['metric']}"
+        for idx, p in enumerate(matched_projs, 1)
     ])
 
     cross_text = "\n".join([
-        f"  ✦ {p['title']} ({p['url']})\n    ↳ {p['metric']}" for p in cross_projs
+        f"  • {p['title']}: {p['url']}\n    ↳ {p['metric']}"
+        for p in cross_projs
     ])
 
-    calendly_link = "https://calendly.com/kishor-ruet-cse/15min"
-
-    subject = f"{role_title} (Remote) @ {company} — 2-Week Free Sprint / Technical Assessment"
+    subject = f"Solving low-latency AI & Agent Infrastructure for {company} — Kishor Kumar Paroi"
 
     body = f"""Hi {company} Founding & Engineering Team,
 
-I've been tracking {company}'s trajectory and noticed your open {role_title} role. Rather than sending a standard boilerplate application, I want to cut straight to what moves the needle:
+I've been tracking {company}'s trajectory and wanted to reach out directly regarding your {role_title} needs.
 
-I am a Remote AI Systems Architect & Founder (RUET CSE Alum). People often label me a "Jack of all trades, master of none" — until they see me write a sub-35ms SIMD pre-filter in Rust, build a 35M-row Lakehouse, train an LLM with RSLoRA, and ship a 3D WebGL engine in the same sprint. I believe in 2026, the highest-leverage engineers are full-stack generalists who can dive deep into compilers and distributed systems without missing a beat.
+I am an AI Systems Architect & Forward Deployed Engineer (Founder @ KoomAI, B.Sc. CSE from RUET, Merit Rank 483rd in Bangladesh). I specialize in high-throughput, sub-millisecond distributed AI systems and zero-trust autonomous agent meshes:
 
-Here is my direct offer to {company}:
-1. ZERO-RISK 2-WEEK SPRINT: Give me your team's most frustrating technical backlog item or bottleneck. I will build and ship it for 2 weeks at zero financial cost or obligation.
-2. IMMEDIATE TECHNICAL ASSESSMENT: If you have a rigorous coding or systems take-home test, send it over immediately. I will complete and return production-ready code with tests within 24 hours.
+🚀 PROUD FLAGSHIP STARTUP: KoomAI (https://koom.kishor.tech)
+Architected an enterprise 20-agent autonomous mesh serving as a one-stop freelancer powerhouse:
+• Sub-120ms glass-to-glass WebRTC high-performance video communication & neural transcription.
+• Autonomous agentic job hunter, automated candidate briefing & ATS resume tailor.
+• NotebookLLM-grade deep research synthesis, multimodal document arbitration, and instant global escrow payouts.
+• 24/7 personal executive assistant mesh sustaining 50,000+ recording minutes.
+• 🔗 Repository: https://github.com/KishorKumarParoi/koom-ai
 
-═════════════════════════════════════════════════════════════════
-🎯 2-3 ARCHITECTURES DIRECTLY MATCHING THIS ROLE:
-═════════════════════════════════════════════════════════════════
+⚡ 4 TARGET ARCHITECTURE PROOFS (Matched to {role_title}):
 {matched_text}
 
-═════════════════════════════════════════════════════════════════
-⚡ 2-3 CROSS-DOMAIN PROOFS OF WORK (BEYOND THE JOB SCOPE):
-═════════════════════════════════════════════════════════════════
+🌐 CROSS-DOMAIN SYSTEMS BREADTH (Proving 'Master of Many'):
 {cross_text}
 
-═════════════════════════════════════════════════════════════════
-📅 1-CLICK INSTANT CALL (15-MIN ZOOM):
-═════════════════════════════════════════════════════════════════
-Book directly on my calendar: {calendly_link}
-(Pick any slot that fits your schedule — Zoom link is generated instantly).
+📚 COMPLETE 15-PROJECT PRODUCTION INDEX & CURRICULUM:
+• Master GitHub Technical Showcase (All 15 Projects): https://github.com/KishorKumarParoi#1-flagship-technical-projects-1---15
+• 38-Module AI Systems Engineering Blueprints: https://github.com/KishorKumarParoi/AI-Engineering
+• 1-Page Visual Resume (PDF): https://kishor.tech/resume.pdf
+• 2-Page ATS Dossier (PDF): https://kishor.tech/resume_single_column.pdf
+• 3D Interactive Spatial Platform: https://3d.kishor.tech
+• 3D Cyber Hacker Cockpit: https://hacker.kishor.tech
 
-Interactive Systems & Resumes:
-• macOS Desktop Portfolio: https://kishor.tech
-• 3D WebGL Universe: https://3d.kishor.tech
-• 1-Page Visual Resume: resume.pdf (Attached for immediate 4-second human review)
-• Comprehensive Single-Column ATS Dossier: resume_single_column.pdf (Attached for full technical depth)
+═════════════════════════════════════════════════════════════════
+📅 1-CLICK INSTANT CALL (15-MIN ZOOM) OR DIRECT WHATSAPP:
+═════════════════════════════════════════════════════════════════
+• Calendar (Instant Zoom): https://calendly.com/kishor-ruet-cse/15min
+• WhatsApp Direct 1-Click Message: https://wa.me/8801724714156?text=Hi%20Kishor,%20I%20saw%20your%20pitch%20for%20{urllib.parse.quote(company)}
 
-Looking forward to taking your assessment test or solving your backlog this week.
+I have attached both my 1-Page Visual Resume (resume.pdf) and 2-Page Single-Column ATS Resume (resume_single_column.pdf) for immediate review.
+
+Looking forward to taking your technical assessment or tackling a 2-week backlog bottleneck this week.
 
 Warm regards,
 
 Kishor Kumar Paroi
-Remote AI Systems Architect & Founder @ KoomAI
+Principal AI Systems Architect | Founder @ KoomAI
 B.Sc. in Computer Science & Engineering (RUET)
-Email: kishor.ruet.cse@gmail.com | Phone: +880 1724-714156
+Email: kishor.ruet.cse@gmail.com | WhatsApp: +8801724714156
 LinkedIn: https://linkedin.com/in/kishor-kumar-paroi-b06344166
 """
+
     mailto_params = urllib.parse.urlencode({"subject": subject, "body": body}, quote_via=urllib.parse.quote)
     mailto_url = f"mailto:{recipient_email}?{mailto_params}"
 
@@ -169,68 +275,15 @@ LinkedIn: https://linkedin.com/in/kishor-kumar-paroi-b06344166
         "to": recipient_email,
         "subject": subject,
         "body": body,
-        "calendly_url": calendly_link,
-        "mailto_url": mailto_url
-    }
-
-
-def generate_curated_cover_letter(company: str, role_title: str, recipient_email: str, snippet: str = "") -> Dict[str, str]:
-    matched_projs, cross_projs = select_curated_project_suite(role_title, snippet)
-
-    matched_text = "\n".join([
-        f"• {p['title']}: {p['metric']} ({p['url']})" for p in matched_projs
-    ])
-
-    cross_text = "\n".join([
-        f"• {p['title']}: {p['metric']} ({p['url']})" for p in cross_projs
-    ])
-
-    subject = f"Application: {role_title} (Remote) — Kishor Kumar Paroi"
-
-    body = f"""Dear {company} Hiring Team,
-
-Please accept this formal application for the {role_title} (Remote) position at {company}.
-
-I bring a unique hybrid engineering perspective: I am an AI Systems Architect, former Startup Founder (KoomAI), and Forward Deployed AI Engineer (phi0.ai Europe / RUET CSE). In a technology landscape moving at lightning speed, my value is being a true polyglot problem-solver — bridging low-level hardware performance (Rust SIMD), cutting-edge AI inference (vLLM, LangGraph), enterprise lakehouses (Databricks, PySpark), and intuitive interfaces.
-
-Why I am ready to prove this immediately:
-• Proof of Work: I am eager to take your technical assessment test immediately, with 24-hour turnaround.
-• Risk-Inverted Trial: I welcome the opportunity to tackle a high-priority 2-week backlog feature to demonstrate production execution before any long-term commitment.
-
-Key Production Architectures Aligned to {company}:
-{matched_text}
-
-Diverse Technical Capabilities Outside Core Scope:
-{cross_text}
-
-Interactive Proofs & Live Architectures:
-• macOS Desktop Portfolio: https://kishor.tech
-• 3D WebGL Spatial Platform: https://3d.kishor.tech
-• Codebase Blueprints: https://github.com/KishorKumarParoi
-• One-Click 15-Minute Sync: https://calendly.com/kishor-ruet-cse/15min
-
-Both my Single-Column ATS Resume (resume_single_column.pdf — optimized for 100% linear portal parsing) and 1-Page Visual Resume (resume.pdf) are provided. Thank you for your consideration, and I look forward to taking your assessment test.
-
-Sincerely,
-
-Kishor Kumar Paroi
-AI Systems Architect & Founder @ KoomAI
-B.Sc. in Computer Science & Engineering (RUET)
-Email: kishor.ruet.cse@gmail.com | Phone: +880 1724-714156
-LinkedIn: https://linkedin.com/in/kishor-kumar-paroi-b06344166
-"""
-    mailto_params = urllib.parse.urlencode({"subject": subject, "body": body}, quote_via=urllib.parse.quote)
-    mailto_url = f"mailto:{recipient_email}?{mailto_params}"
-
-    return {
-        "to": recipient_email,
-        "subject": subject,
-        "body": body,
-        "mailto_url": mailto_url
+        "mailto_url": mailto_url,
+        "matched_projects": matched_projs,
+        "cross_projects": cross_projs
     }
 
 
 if __name__ == "__main__":
-    sample = generate_curated_cold_email("Anthropic", "Senior Systems Engineer", "founders@anthropic.com", "Distributed inference with Rust and Python")
-    print("Subject:", sample["subject"])
-    print("\nBody Snippet:\n", sample["body"][:1200])
+    print(f"Loaded all {len(ALL_15_PROJECTS)} verified projects!")
+    sample = generate_curated_cold_email("Anthropic", "Senior vLLM & LLMOps Systems Engineer", "founders@anthropic.com", "High-throughput inference on GPU clusters with vLLM, Rust and LangGraph agents")
+    print(f"Generated Subject: {sample['subject']}\n")
+    print("--- SAMPLE PITCH PREVIEW ---")
+    print(sample["body"][:1200] + "\n...")
