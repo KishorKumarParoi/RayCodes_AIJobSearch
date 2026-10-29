@@ -22,8 +22,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Curated direct contacts for top high-paying startups (100% verified mailboxes)
 KNOWN_FOUNDER_CONTACTS = {
     "arrangr": "hello@arrangr.com",
-    "curai": "careers@curaihealth.com",
-    "curai health": "careers@curaihealth.com",
+    "curai": "jobs@curai.com",
+    "curai health": "jobs@curai.com",
     "cognition": "scott@cognition-partner.ai",
     "cognition ai": "scott@cognition-partner.ai",
     "e2b": "vasek@e2b.dev",

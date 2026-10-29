@@ -232,18 +232,19 @@ def run_one_go_dispatch(
             continue
 
         # Zero-Bounce Guard: Distinguish Verified vs Speculative guesses
-        is_verified = (
-            any(k in comp.lower() for k in founder_discovery.KNOWN_FOUNDER_CONTACTS)
-            or "twitter" in plat.lower()
-            or "x" in plat.lower()
-            or "tweet" in str(job.get("source_file", ""))
-            or not email_addr.startswith("founders@")
-        )
+        # Only true verified contacts (from verified curated list or founder tweets) are allowed for live SMTP
+        is_curated_contact = any(k in comp.lower().strip() for k in founder_discovery.KNOWN_FOUNDER_CONTACTS)
+        is_founder_tweet = "twitter" in plat.lower() or "x" in plat.lower() or "tweet" in str(job.get("source_file", ""))
+        is_ats_portal = any(ats in str(job.get("url", "")).lower() for ats in ["lever.co", "greenhouse.io", "myworkdayjobs.com", "ashbyhq.com"])
+
+        is_verified = (is_curated_contact or is_founder_tweet) and not is_ats_portal
 
         if live_send and not is_verified and not allow_speculative:
-            print(f"   🛡️ [Zero-Bounce Shield] Skipped speculative address: {email_addr}")
-            print(f"      👉 Staged safely in Excel with 1-click mailto link (avoids 550 NoSuchUser bounce).")
-            job["status"] = "STAGED_SPECULATIVE"
+            print(f"   🛡️ [Zero-Bounce Shield] Blocked live send to speculative address: {email_addr}")
+            if is_ats_portal:
+                print(f"      👉 Direct ATS Portal detected: {job.get('url')}")
+            print(f"      👉 Staged safely in Excel with 1-click apply/mailto link (avoids 550 NoSuchUser bounce).")
+            job["status"] = "STAGED_PORTAL" if is_ats_portal else "STAGED_SPECULATIVE"
             continue
 
         pitch = build_curated_pitch(job)

@@ -162,6 +162,14 @@ def run_safe_outreach(batch_limit: int = 10, min_interval_sec: int = 45, max_int
             founder["delivery_status"] = f"BLOCKED: {validation_reason}"
             continue
 
+        # Zero-Bounce Shield: Block speculative addresses from automated live SMTP
+        is_curated = any(k in company.lower().strip() for k in founder_discovery.KNOWN_FOUNDER_CONTACTS)
+        if live_send and not is_curated and email_addr.startswith("founders@"):
+            print(f"   🛡️ [Zero-Bounce Shield] Skipped speculative address: {email_addr}")
+            print(f"      👉 Staged safely in Excel with 1-click mailto link to prevent 550 NoSuchUser bounces.")
+            founder["delivery_status"] = "STAGED_SPECULATIVE"
+            continue
+
         if live_send and is_smtp_ready:
             try:
                 msg = MIMEMultipart()
