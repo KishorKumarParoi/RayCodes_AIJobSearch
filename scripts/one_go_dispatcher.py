@@ -203,11 +203,17 @@ def run_one_go_dispatch(
 
         if live_send:
             try:
-                msg = MIMEMultipart()
+                msg = MIMEMultipart("mixed")
                 msg["From"] = f"{smtp_cfg['SENDER_NAME']} <{smtp_cfg['SENDER_EMAIL']}>"
                 msg["To"] = email_addr
                 msg["Subject"] = pitch["subject"]
-                msg.attach(MIMEText(pitch["body"], "plain"))
+
+                # Dual Alternative: Plain Text + Responsive HTML Email
+                alt_part = MIMEMultipart("alternative")
+                alt_part.attach(MIMEText(pitch["body"], "plain", "utf-8"))
+                if pitch.get("html_body"):
+                    alt_part.attach(MIMEText(pitch["html_body"], "html", "utf-8"))
+                msg.attach(alt_part)
 
                 if p1.exists():
                     with open(p1, "rb") as fp:

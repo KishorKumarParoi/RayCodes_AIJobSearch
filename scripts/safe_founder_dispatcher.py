@@ -122,11 +122,17 @@ def run_safe_outreach(batch_limit: int = 10, min_interval_sec: int = 45, max_int
 
         if live_send and is_smtp_ready:
             try:
-                msg = MIMEMultipart()
+                msg = MIMEMultipart("mixed")
                 msg["From"] = f"{smtp_cfg['SENDER_NAME']} <{smtp_cfg['SENDER_EMAIL'] or smtp_cfg['SMTP_USER']}>"
                 msg["To"] = email_addr
                 msg["Subject"] = pitch["subject"]
-                msg.attach(MIMEText(pitch["body"], "plain"))
+
+                # Dual Alternative: Plain Text + Responsive HTML Email
+                alt_part = MIMEMultipart("alternative")
+                alt_part.attach(MIMEText(pitch["body"], "plain", "utf-8"))
+                if pitch.get("html_body"):
+                    alt_part.attach(MIMEText(pitch["html_body"], "html", "utf-8"))
+                msg.attach(alt_part)
 
                 # Attach Verified Executive Resumes (1-Page Visual & 2-Page ATS)
                 from email.mime.application import MIMEApplication

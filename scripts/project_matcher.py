@@ -6,6 +6,7 @@ Architected for:
   - Radical Risk Inversion: "2-Week Free Production Trial on your toughest bottleneck" + "Immediate Assessment Test"
   - 'Jack of All Trades, Master of Many' positioning (Compiler/SIMD -> AI RAG -> Lakehouse -> 3D WebGL)
   - 1-Click WhatsApp Direct Chat & Calendly 15-Minute Zoom Booking Integration
+  - Dual Plain Text + Responsive HTML Email Formatting
   - Deep Dynamic Project Mapping across all 15 Production Projects from Master Resume & GitHub README
 """
 
@@ -142,11 +143,9 @@ ALL_15_PROJECTS = {
 def score_project_relevance(project: Dict[str, Any], query_text: str) -> int:
     query_lower = query_text.lower()
     score = 0
-    # Match tags
     for tag in project.get("tags", []):
         if tag in query_lower:
             score += 10
-    # Match title & stack words
     title_words = project.get("title", "").lower().split()
     for w in title_words:
         if len(w) > 3 and w in query_lower:
@@ -159,11 +158,6 @@ def score_project_relevance(project: Dict[str, Any], query_text: str) -> int:
 
 
 def select_curated_project_suite(job_title: str, job_snippet: str = "") -> Tuple[List[Dict[str, Any]], List[Dict[str, Any]]]:
-    """
-    Intelligently scores all 15 projects against the target role and selects:
-      - 4 Best-Matched Core Architecture Proofs (with direct GitHub repo links & verified metrics)
-      - 3 High-Impact Cross-Domain Feats (demonstrating breadth & founder execution)
-    """
     search_context = f"{job_title} {job_snippet}".lower()
 
     scored = []
@@ -171,15 +165,11 @@ def select_curated_project_suite(job_title: str, job_snippet: str = "") -> Tuple
         relevance = score_project_relevance(p, search_context)
         scored.append((relevance, p))
 
-    # Sort descending by relevance
     scored.sort(key=lambda x: x[0], reverse=True)
-
-    # Top 4 matched projects
     matched = [item[1] for item in scored[:4]]
 
-    # Ensure baseline flagship projects are represented if relevance is low
     matched_ids = {p["id"] for p in matched}
-    fallback_priority = [3, 2, 1, 13]  # AI Security, vLLM/Rust, Zomato, KoomAI
+    fallback_priority = [3, 2, 1, 13]
     for fid in fallback_priority:
         if len(matched) < 4:
             cand = next((p for p in ALL_15_PROJECTS.values() if p["id"] == fid), None)
@@ -187,7 +177,6 @@ def select_curated_project_suite(job_title: str, job_snippet: str = "") -> Tuple
                 matched.append(cand)
                 matched_ids.add(cand["id"])
 
-    # 3 Distinct Cross-Domain Projects outside the top 4
     cross = []
     cross_candidates = [
         ALL_15_PROJECTS["13_KOOMAI_VIDEO_AI"],
@@ -206,54 +195,77 @@ def select_curated_project_suite(job_title: str, job_snippet: str = "") -> Tuple
     return matched, cross
 
 
-def generate_curated_cold_email(company: str, role_title: str, recipient_email: str, snippet: str = "") -> Dict[str, str]:
+def generate_curated_cold_email(company: str, role_title: str, recipient_email: str, snippet: str = "") -> Dict[str, Any]:
     matched_projs, cross_projs = select_curated_project_suite(role_title, snippet)
 
-    matched_text = "\n".join([
-        f"  {idx}. {p['title']}\n     🔗 Repository: {p['url']}\n     ⚙️ Stack: {p['stack']}\n     📈 Impact: {p['metric']}"
-        for idx, p in enumerate(matched_projs, 1)
-    ])
+    # 1. Plain Text Project Cards
+    matched_text_blocks = []
+    for idx, p in enumerate(matched_projs, 1):
+        block = (
+            f"  [{idx}] {p['title']}\n"
+            f"      🔗 Code   : {p['url']}\n"
+            f"      ⚙️ Stack  : {p['stack']}\n"
+            f"      📈 Impact : {p['metric']}"
+        )
+        matched_text_blocks.append(block)
+    matched_text = "\n\n".join(matched_text_blocks)
 
-    cross_text = "\n".join([
-        f"  • {p['title']}: {p['url']}\n    ↳ {p['metric']}"
-        for p in cross_projs
-    ])
+    cross_text_blocks = []
+    for p in cross_projs:
+        cross_text_blocks.append(f"  ▸ {p['title']}: {p['url']}\n    ↳ {p['metric']}")
+    cross_text = "\n\n".join(cross_text_blocks)
 
     subject = f"Solving low-latency AI & Agent Infrastructure for {company} — Kishor Kumar Paroi"
 
+    encoded_company = urllib.parse.quote(company)
+    whatsapp_url = f"https://wa.me/8801724714156?text=Hi%20Kishor,%20I%20saw%20your%20pitch%20for%20{encoded_company}"
+    calendly_url = "https://calendly.com/kishor-ruet-cse/15min"
+
+    # Plain Text Body
     body = f"""Hi {company} Founding & Engineering Team,
 
-I've been tracking {company}'s trajectory and wanted to reach out directly regarding your {role_title} needs.
+I've been tracking {company}'s trajectory and wanted to reach out directly regarding your open {role_title} role.
 
-I am an AI Systems Architect & Forward Deployed Engineer (Founder @ KoomAI, B.Sc. CSE from RUET, Merit Rank 483rd in Bangladesh). I specialize in high-throughput, sub-millisecond distributed AI systems and zero-trust autonomous agent meshes:
+I am an AI Systems Architect & Forward Deployed Engineer (Founder @ KoomAI • RUET CSE Merit Rank 483rd in Bangladesh). I specialize in high-throughput, sub-millisecond distributed AI systems and zero-trust autonomous agent meshes.
 
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 🚀 PROUD FLAGSHIP STARTUP: KoomAI (https://koom.kishor.tech)
-Architected an enterprise 20-agent autonomous mesh serving as a one-stop freelancer powerhouse:
+   Enterprise 20-Agent Autonomous Mesh & Video Intelligence Powerhouse
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 • Sub-120ms glass-to-glass WebRTC high-performance video communication & neural transcription.
 • Autonomous agentic job hunter, automated candidate briefing & ATS resume tailor.
 • NotebookLLM-grade deep research synthesis, multimodal document arbitration, and instant global escrow payouts.
 • 24/7 personal executive assistant mesh sustaining 50,000+ recording minutes.
-• 🔗 Repository: https://github.com/KishorKumarParoi/koom-ai
+• 🔗 Verified Repository: https://github.com/KishorKumarParoi/koom-ai
 
-⚡ 4 TARGET ARCHITECTURE PROOFS (Matched to {role_title}):
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+⚡ 4 ARCHITECTURE PROOFS MATCHED TO {role_title.upper()}:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 {matched_text}
 
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 🌐 CROSS-DOMAIN SYSTEMS BREADTH (Proving 'Master of Many'):
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 {cross_text}
 
-📚 COMPLETE 15-PROJECT PRODUCTION INDEX & CURRICULUM:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📚 COMPLETE 15-PROJECT PRODUCTION INDEX & RESUMES:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 • Master GitHub Technical Showcase (All 15 Projects): https://github.com/KishorKumarParoi#1-flagship-technical-projects-1---15
 • 38-Module AI Systems Engineering Blueprints: https://github.com/KishorKumarParoi/AI-Engineering
-• 1-Page Visual Resume (PDF): https://kishor.tech/resume.pdf
-• 2-Page ATS Dossier (PDF): https://kishor.tech/resume_single_column.pdf
-• 3D Interactive Spatial Platform: https://3d.kishor.tech
-• 3D Cyber Hacker Cockpit: https://hacker.kishor.tech
+• 📄 1-Page Visual Resume (PDF): https://kishor.tech/resume.pdf
+• 📑 2-Page ATS Dossier (PDF): https://kishor.tech/resume_single_column.pdf
+• 🧊 3D Interactive Spatial Platform: https://3d.kishor.tech
+• ⚡ 3D Cyber Hacker Cockpit: https://hacker.kishor.tech
 
-═════════════════════════════════════════════════════════════════
-📅 1-CLICK INSTANT CALL (15-MIN ZOOM) OR DIRECT WHATSAPP:
-═════════════════════════════════════════════════════════════════
-• Calendar (Instant Zoom): https://calendly.com/kishor-ruet-cse/15min
-• WhatsApp Direct 1-Click Message: https://wa.me/8801724714156?text=Hi%20Kishor,%20I%20saw%20your%20pitch%20for%20{urllib.parse.quote(company)}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+⚡ 1-CLICK INSTANT CALL (15-MIN ZOOM) OR DIRECT WHATSAPP:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+💬 Direct WhatsApp Message (1-Click):
+   {whatsapp_url}
+
+📅 15-Minute Zoom Sync (Instant Calendar Booking):
+   {calendly_url}
 
 I have attached both my 1-Page Visual Resume (resume.pdf) and 2-Page Single-Column ATS Resume (resume_single_column.pdf) for immediate review.
 
@@ -268,6 +280,133 @@ Email: kishor.ruet.cse@gmail.com | WhatsApp: +8801724714156
 LinkedIn: https://linkedin.com/in/kishor-kumar-paroi-b06344166
 """
 
+    # Responsive Modern HTML Email Version
+    html_matched_cards = []
+    for idx, p in enumerate(matched_projs, 1):
+        card = f"""
+        <div style="background-color: #ffffff; border: 1px solid #e2e8f0; border-left: 4px solid #641c26; border-radius: 8px; padding: 14px 18px; margin-bottom: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.04);">
+            <div style="font-size: 15px; font-weight: 700; color: #0f172a; margin-bottom: 4px;">
+                <span style="background-color: #641c26; color: #ffffff; padding: 2px 7px; border-radius: 4px; font-size: 12px; margin-right: 6px;">#{idx}</span>
+                {p['title']}
+            </div>
+            <div style="margin: 4px 0;">
+                <a href="{p['url']}" style="color: #2563eb; text-decoration: none; font-size: 13px; font-weight: 600;">🔗 {p['url']} &rarr;</a>
+            </div>
+            <div style="font-size: 12px; color: #475569; margin: 4px 0;">
+                <strong style="color: #1e293b;">⚙️ Stack:</strong> {p['stack']}
+            </div>
+            <div style="font-size: 13px; color: #047857; font-weight: 600; margin-top: 4px;">
+                <strong>📈 Impact:</strong> {p['metric']}
+            </div>
+        </div>
+        """
+        html_matched_cards.append(card)
+
+    html_cross_cards = []
+    for p in cross_projs:
+        card = f"""
+        <li style="margin-bottom: 8px; font-size: 13px; color: #334155;">
+            <strong><a href="{p['url']}" style="color: #2563eb; text-decoration: none;">{p['title']}</a>:</strong> {p['metric']}
+        </li>
+        """
+        html_cross_cards.append(card)
+
+    html_body = f"""
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    </head>
+    <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; line-height: 1.6; color: #1e293b; background-color: #f8fafc; margin: 0; padding: 20px;">
+        <div style="max-width: 680px; margin: 0 auto; background-color: #ffffff; border-radius: 12px; border: 1px solid #e2e8f0; padding: 28px; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
+            
+            <p style="font-size: 15px; margin-top: 0;">Hi <strong>{company}</strong> Founding & Engineering Team,</p>
+            
+            <p style="font-size: 14px; color: #334155;">
+                I've been tracking <strong>{company}</strong>'s trajectory and wanted to reach out directly regarding your open <strong>{role_title}</strong> role.
+            </p>
+            
+            <p style="font-size: 14px; color: #334155;">
+                I am an <strong>AI Systems Architect & Forward Deployed Engineer</strong> (Founder @ KoomAI &bull; B.Sc. CSE from RUET, Merit Rank 483rd in Bangladesh). I specialize in high-throughput, sub-millisecond distributed AI systems and zero-trust autonomous agent meshes:
+            </p>
+
+            <!-- KoomAI Flagship Card -->
+            <div style="background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%); color: #ffffff; border-radius: 10px; padding: 18px 20px; margin: 20px 0;">
+                <div style="display: flex; align-items: center; margin-bottom: 8px;">
+                    <span style="font-size: 18px; margin-right: 8px;">🚀</span>
+                    <strong style="font-size: 16px; color: #38bdf8;">PROUD FLAGSHIP: KoomAI (<a href="https://koom.kishor.tech" style="color: #38bdf8; text-decoration: underline;">koom.kishor.tech</a>)</strong>
+                </div>
+                <p style="font-size: 13px; color: #94a3b8; margin: 0 0 10px 0;">Enterprise 20-Agent Autonomous Mesh & Real-Time Video Intelligence Powerhouse</p>
+                <ul style="margin: 0; padding-left: 20px; font-size: 12px; color: #e2e8f0; line-height: 1.6;">
+                    <li>Sub-120ms glass-to-glass WebRTC media engine across 50,000+ recording minutes</li>
+                    <li>Autonomous agentic job hunter, candidate briefing & ATS resume tailor</li>
+                    <li>NotebookLLM-grade deep research synthesis, multimodal document arbitration & escrow payouts</li>
+                    <li>🔗 Verified Repository: <a href="https://github.com/KishorKumarParoi/koom-ai" style="color: #67e8f9;">github.com/KishorKumarParoi/koom-ai</a></li>
+                </ul>
+            </div>
+
+            <!-- Matched 4 Projects Header -->
+            <div style="margin-top: 24px; margin-bottom: 12px; border-bottom: 2px solid #e2e8f0; padding-bottom: 6px;">
+                <span style="font-size: 14px; font-weight: 800; color: #0f172a; text-transform: uppercase; letter-spacing: 0.5px;">
+                    ⚡ 4 Architecture Proofs Matched to {role_title}:
+                </span>
+            </div>
+            
+            {''.join(html_matched_cards)}
+
+            <!-- Cross-Domain Breadth -->
+            <div style="margin-top: 22px; background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 14px 18px;">
+                <strong style="font-size: 13px; color: #0f172a; text-transform: uppercase; letter-spacing: 0.5px;">🌐 Cross-Domain Systems Breadth ('Master of Many'):</strong>
+                <ul style="margin: 8px 0 0 0; padding-left: 18px; line-height: 1.5;">
+                    {''.join(html_cross_cards)}
+                </ul>
+            </div>
+
+            <!-- Verified Credentials Bar -->
+            <div style="margin-top: 22px; padding: 14px 18px; background-color: #f1f5f9; border-radius: 8px; font-size: 13px;">
+                <strong style="color: #0f172a;">📚 Complete 15-Project Index & Live Credentials:</strong>
+                <div style="margin-top: 8px; display: flex; flex-wrap: wrap; gap: 8px;">
+                    <a href="https://github.com/KishorKumarParoi#1-flagship-technical-projects-1---15" style="background-color: #0f172a; color: #ffffff; padding: 4px 10px; border-radius: 4px; text-decoration: none; font-size: 12px;">🐙 All 15 Projects on GitHub</a>
+                    <a href="https://kishor.tech/resume.pdf" style="background-color: #641c26; color: #ffffff; padding: 4px 10px; border-radius: 4px; text-decoration: none; font-size: 12px;">📄 1-Page Visual Resume</a>
+                    <a href="https://kishor.tech/resume_single_column.pdf" style="background-color: #1e293b; color: #ffffff; padding: 4px 10px; border-radius: 4px; text-decoration: none; font-size: 12px;">📑 2-Page ATS Dossier</a>
+                    <a href="https://3d.kishor.tech" style="background-color: #4338ca; color: #ffffff; padding: 4px 10px; border-radius: 4px; text-decoration: none; font-size: 12px;">🧊 3D Platform</a>
+                </div>
+            </div>
+
+            <!-- Zero-Friction CTA Buttons -->
+            <div style="margin-top: 28px; padding: 20px; background: #faf5ff; border: 1px solid #e9d5ff; border-radius: 10px; text-align: center;">
+                <div style="font-size: 14px; font-weight: 700; color: #581c87; margin-bottom: 12px; text-transform: uppercase;">
+                    ⚡ Zero-Friction Direct Connect
+                </div>
+                <div style="display: inline-block; margin: 4px;">
+                    <a href="{whatsapp_url}" style="background-color: #25D366; color: #ffffff; padding: 12px 22px; text-decoration: none; border-radius: 6px; font-weight: 700; font-size: 13px; display: inline-block;">
+                        💬 Message on WhatsApp (1-Click)
+                    </a>
+                </div>
+                <div style="display: inline-block; margin: 4px;">
+                    <a href="{calendly_url}" style="background-color: #0284c7; color: #ffffff; padding: 12px 22px; text-decoration: none; border-radius: 6px; font-weight: 700; font-size: 13px; display: inline-block;">
+                        📅 Book 15-Min Zoom Call
+                    </a>
+                </div>
+                <p style="font-size: 12px; color: #6b21a8; margin-top: 10px; margin-bottom: 0;">
+                    Both <strong>1-Page Visual Resume</strong> & <strong>2-Page ATS Dossier</strong> are attached to this email.
+                </p>
+            </div>
+
+            <!-- Signature -->
+            <div style="margin-top: 26px; border-top: 1px solid #e2e8f0; padding-top: 16px; font-size: 13px; color: #475569;">
+                <strong style="font-size: 14px; color: #0f172a;">Kishor Kumar Paroi</strong><br>
+                Principal AI Systems Architect | Founder @ KoomAI<br>
+                B.Sc. in Computer Science & Engineering (RUET)<br>
+                <span style="color: #64748b;">Email: <a href="mailto:kishor.ruet.cse@gmail.com" style="color: #2563eb;">kishor.ruet.cse@gmail.com</a> | WhatsApp: +8801724714156 | <a href="https://linkedin.com/in/kishor-kumar-paroi-b06344166" style="color: #2563eb;">LinkedIn</a></span>
+            </div>
+
+        </div>
+    </body>
+    </html>
+    """
+
     mailto_params = urllib.parse.urlencode({"subject": subject, "body": body}, quote_via=urllib.parse.quote)
     mailto_url = f"mailto:{recipient_email}?{mailto_params}"
 
@@ -275,6 +414,7 @@ LinkedIn: https://linkedin.com/in/kishor-kumar-paroi-b06344166
         "to": recipient_email,
         "subject": subject,
         "body": body,
+        "html_body": html_body,
         "mailto_url": mailto_url,
         "matched_projects": matched_projs,
         "cross_projects": cross_projs
@@ -282,8 +422,10 @@ LinkedIn: https://linkedin.com/in/kishor-kumar-paroi-b06344166
 
 
 if __name__ == "__main__":
-    print(f"Loaded all {len(ALL_15_PROJECTS)} verified projects!")
+    print(f"Loaded all {len(ALL_15_PROJECTS)} verified projects with Eye-Catching Dual Plain/HTML formatting!")
     sample = generate_curated_cold_email("Anthropic", "Senior vLLM & LLMOps Systems Engineer", "founders@anthropic.com", "High-throughput inference on GPU clusters with vLLM, Rust and LangGraph agents")
     print(f"Generated Subject: {sample['subject']}\n")
-    print("--- SAMPLE PITCH PREVIEW ---")
-    print(sample["body"][:1200] + "\n...")
+    print("--- SAMPLE PLAIN TEXT PREVIEW ---")
+    print(sample["body"][:900] + "\n...")
+    print("\n--- SAMPLE HTML LENGTH ---")
+    print(f"{len(sample['html_body'])} characters of rich responsive HTML styling!")
