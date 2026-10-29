@@ -46,9 +46,10 @@ import founders_crm
 import tracker
 import dossier_sync
 import email_watcher
+import project_matcher
 
 USER_AGENT = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36"
-MIN_FIT_THRESHOLD = 50
+MIN_FIT_THRESHOLD = 30
 BATCH_PUSH_TRIGGER = 100
 
 RUNNING = True
@@ -108,14 +109,15 @@ def load_cached_raw_simplify_stream() -> List[Dict[str, Any]]:
 
 def calculate_50_fit_score(title: str, company: str, category: str = "") -> int:
     blob = f"{title} {company} {category}".lower()
-    score = 52
+    score = 35  # Base fit for verified 100% remote software & tech roles
 
     boosts = [
         ("ai", 15), ("machine learning", 15), ("ml", 12), ("llm", 15),
         ("rag", 14), ("systems", 12), ("architect", 14), ("principal", 14),
         ("lead", 10), ("staff", 12), ("senior", 10), ("engineer", 8),
         ("data", 10), ("lakehouse", 12), ("backend", 8), ("software", 8),
-        ("rust", 10), ("python", 8), ("cloud", 8), ("kubernetes", 10)
+        ("rust", 10), ("python", 8), ("cloud", 8), ("kubernetes", 10),
+        ("developer", 8), ("full stack", 8), ("frontend", 6), ("devops", 8)
     ]
     for term, boost in boosts:
         if term in blob:
@@ -142,15 +144,15 @@ def create_or_update_founder_excel(crm_records: List[Dict[str, Any]]):
     )
 
     # Title Block
-    ws.merge_cells("A1:K1")
+    ws.merge_cells("A1:L1")
     ws["A1"] = "TECH FOUNDER OUTREACH & COLD EMAIL CRM (AUTONOMOUS 24/7 TRACKER)"
     ws["A1"].font = title_font
     ws["A1"].fill = navy_fill
     ws["A1"].alignment = Alignment(horizontal="center", vertical="center")
     ws.row_dimensions[1].height = 36
 
-    ws.merge_cells("A2:K2")
-    ws["A2"] = f"Total Unique Founders: {len(crm_records)} | Threshold: 50%+ Fit | Zero Duplicates | Updated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} | Sender: kishor.ruet.cse@gmail.com"
+    ws.merge_cells("A2:L2")
+    ws["A2"] = f"Total Unique Founders: {len(crm_records)} | Threshold: 30%+ Fit | Rule: Attach resume.pdf for Humans | Updated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"
     ws["A2"].font = Font(name="Calibri", size=9, italic=True, color="94A3B8")
     ws["A2"].fill = navy_fill
     ws["A2"].alignment = Alignment(horizontal="center", vertical="center")
@@ -159,7 +161,7 @@ def create_or_update_founder_excel(crm_records: List[Dict[str, Any]]):
     # Headers
     headers = [
         "Founder ID", "Company", "Target Position", "Founder / Hiring Email",
-        "Fit Score %", "Delivery Status", "Mail Sent?", "Dispatch Date",
+        "Target Resume (Human)", "Fit Score %", "Delivery Status", "Mail Sent?", "Dispatch Date",
         "Reply Received?", "Reply Intent", "One-Click Send Mail"
     ]
     for col_idx, h in enumerate(headers, 1):
@@ -190,6 +192,7 @@ def create_or_update_founder_excel(crm_records: List[Dict[str, Any]]):
             r.get("company", ""),
             r.get("role", ""),
             r.get("email", ""),
+            "resume.pdf (1-Page Visual)",
             f"{r.get('fit_score', 65)}%",
             status,
             mail_sent,
@@ -204,12 +207,12 @@ def create_or_update_founder_excel(crm_records: List[Dict[str, Any]]):
             cell.font = data_font
             cell.fill = fill
             cell.border = thin_border
-            if col_idx in [1, 5, 6, 7, 8, 9]:
+            if col_idx in [1, 5, 6, 7, 8, 9, 10]:
                 cell.alignment = Alignment(horizontal="center", vertical="center")
             else:
                 cell.alignment = Alignment(horizontal="left", vertical="center")
 
-            if col_idx == 11 and str(val).startswith("mailto:"):
+            if col_idx == 12 and str(val).startswith("mailto:"):
                 cell.value = "✉️ Send Cold Email"
                 cell.hyperlink = val
                 cell.font = Font(name="Calibri", size=10, color="2563EB", underline="single")
@@ -321,9 +324,10 @@ def run_continuous_ingestion(target_accumulate: int = 100):
         loc_list = item.get("locations", [])
         loc_str = ", ".join(loc_list) if loc_list else "Remote Worldwide"
 
-        # 4. Discover tech founder email
+        # 4. Discover tech founder email and curate customized cold email + cover letter
         founder_email = founder_discovery.discover_contact_email(company, raw_url, f"{title} {loc_str}")
-        pitch = founders_crm.get_high_converting_cold_mail(company, title, founder_email, {})
+        pitch = founders_crm.get_high_converting_cold_mail(company, title, founder_email, {}, f"{title} {loc_str}")
+        cover_letter = project_matcher.generate_curated_cover_letter(company, title, founder_email, f"{title} {loc_str}")
 
         # Build Job Record
         new_app_id = f"APP-{len(board) + len(staging_buffer_jobs) + 1:04d}"
@@ -335,15 +339,18 @@ def run_continuous_ingestion(target_accumulate: int = 100):
             "status": "DRAFT",
             "fit_score": fit,
             "stage_history": [
-                {"stage": "DRAFT", "timestamp": now_str, "notes": "Live Ingested (Fit >= 50%)"}
+                {"stage": "DRAFT", "timestamp": now_str, "notes": "Live Ingested (Fit >= 30%)"}
             ],
             "application_date": datetime.now().strftime("%Y-%m-%d"),
             "url": raw_url,
             "contact_email": founder_email,
-            "notes": [f"Fit: {fit}%. Category: {item.get('category', 'Tech')}. Sponsorship: {item.get('sponsorship', 'Available')}"],
+            "notes": [f"Fit: {fit}%. Category: {item.get('category', 'Tech')}. 100% Remote. 2-Week Trial & Calendly Pitch Ready."],
             "response_category": "Awaiting Reply",
             "last_response_snippet": "",
             "next_action": "Review customized outreach pitch or dispatch via Gmail SMTP",
+            "curated_cold_email": pitch["body"],
+            "curated_cover_letter": cover_letter["body"],
+            "calendly_url": pitch.get("calendly_url", "https://calendly.com/kishor-ruet-cse/15min"),
             "last_updated": now_str
         }
         staging_buffer_jobs.append(job_record)
@@ -364,8 +371,11 @@ def run_continuous_ingestion(target_accumulate: int = 100):
                 "dispatch_date": now_str,
                 "reply_received": False,
                 "reply_intent": "Awaiting Reply",
-                "mailto_url": pitch["mailto_url"],
-                "notes": f"High-converting architecture pitch prepared for {company}."
+                "mailto_url": pitch.get("mailto_url", ""),
+                "calendly_url": pitch.get("calendly_url", "https://calendly.com/kishor-ruet-cse/15min"),
+                "cold_email_subject": pitch.get("subject", ""),
+                "cold_email_body": pitch.get("body", ""),
+                "notes": f"High-converting 2-week sprint + Calendly architecture pitch prepared for {company}."
             }
             staging_buffer_crm.append(crm_record)
 

@@ -21,7 +21,7 @@ case "${1:-run}" in
       exit 0
     fi
     echo "🚀 Starting 24-Hour Autonomous Career Agent in background (using $PY_BIN)..."
-    PYTHONUNBUFFERED=1 nohup "$PY_BIN" "$SCRIPT_DIR/scripts/autopilot_24h_agent.py" --job-interval-minutes 5.0 --email-interval 5.0 >> "$LOG_FILE" 2>&1 &
+    PYTHONUNBUFFERED=1 nohup "$PY_BIN" "$SCRIPT_DIR/scripts/autopilot_24h_agent.py" --job-interval-minutes 5.0 --email-interval 5.0 --min-score 30 >> "$LOG_FILE" 2>&1 &
     echo $! > "$PID_FILE"
     echo "✅ Agent started with PID $(cat "$PID_FILE")."
     echo "📄 Streaming logs to $LOG_FILE"

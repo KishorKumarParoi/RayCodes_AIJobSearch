@@ -186,7 +186,7 @@ def main():
     parser.add_argument("--job-interval", type=float, default=0.0833, help="Hours between job vacancy fetch cycles (e.g. 0.0833 for 5 mins)")
     parser.add_argument("--job-interval-minutes", type=float, default=5.0, help="Minutes between job vacancy fetch cycles (default: 5.0)")
     parser.add_argument("--email-interval", type=float, default=15.0, help="Minutes between email inbox sync checks (default: 15.0)")
-    parser.add_argument("--min-score", type=int, default=80, help="Minimum fit score (default: 80)")
+    parser.add_argument("--min-score", type=int, default=30, help="Minimum fit score (default: 30)")
     parser.add_argument("--once", action="store_true", help="Run one full cycle (jobs + emails + excel) and exit")
     parser.add_argument("--status", action="store_true", help="Print current tracking stats and exit")
     args = parser.parse_args()

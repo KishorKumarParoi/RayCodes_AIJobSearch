@@ -100,6 +100,7 @@ def build_pipeline_sheet(ws, apps: List[Dict[str, Any]]):
         "Location / Work Mode",
         "Source",
         "Job URL",
+        "Target Resume (ATS Upload)",
         "Recruiter / Contact Email",
         "Fit Score %",
         "Status",
@@ -114,7 +115,7 @@ def build_pipeline_sheet(ws, apps: List[Dict[str, Any]]):
     ]
 
     # Set Title Banner
-    ws.merge_cells("A1:Q1")
+    ws.merge_cells("A1:R1")
     title_cell = ws["A1"]
     title_cell.value = "🚀 24-Hour AI Career Agent — Live Application & Email Response Tracker"
     title_cell.font = Font(name="Calibri", size=14, bold=True, color="FFFFFF")
@@ -123,9 +124,9 @@ def build_pipeline_sheet(ws, apps: List[Dict[str, Any]]):
     ws.row_dimensions[1].height = 36
 
     # Subtitle / Timestamp
-    ws.merge_cells("A2:Q2")
+    ws.merge_cells("A2:R2")
     sub_cell = ws["A2"]
-    sub_cell.value = f"Candidate: Kishor Kumar Paroi (Principal AI Systems Architect) | Last Synchronized: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"
+    sub_cell.value = f"Candidate: Kishor Kumar Paroi (Principal AI Systems Architect) | Rule: Upload resume_single_column.pdf to Portals | Last Synchronized: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"
     sub_cell.font = Font(name="Calibri", size=10, italic=True, color="64748B")
     sub_cell.alignment = Alignment(horizontal="center", vertical="center")
     ws.row_dimensions[2].height = 20
@@ -214,6 +215,7 @@ def build_pipeline_sheet(ws, apps: List[Dict[str, Any]]):
             location,
             source,
             url,
+            "resume_single_column.pdf (ATS)",
             contact_email,
             f"{fit_score}%" if isinstance(fit_score, (int, float)) else str(fit_score),
             status,
@@ -237,8 +239,12 @@ def build_pipeline_sheet(ws, apps: List[Dict[str, Any]]):
             cell.fill = zebra_fill
 
             # Centered columns
-            if col_idx in [1, 5, 8, 10, 11, 12, 16]:
+            if col_idx in [1, 5, 7, 9, 11, 12, 13, 17]:
                 cell.alignment = Alignment(horizontal="center", vertical="center")
+
+            # Target resume column styling
+            if col_idx == 7:
+                cell.font = Font(name="Calibri", size=9, bold=True, color="047857")
 
             # Clickable URL hyperlink
             if col_idx == 6 and url.startswith("http"):
@@ -246,14 +252,14 @@ def build_pipeline_sheet(ws, apps: List[Dict[str, Any]]):
                 cell.font = Font(name="Calibri", size=10, color="0284C7", underline="single")
 
             # Status column styling
-            if col_idx == 9:
+            if col_idx == 10:
                 s_bg, s_fg = STATUS_STYLES.get(status, ("F1F5F9", "475569"))
                 cell.fill = PatternFill(start_color=s_bg, end_color=s_bg, fill_type="solid")
                 cell.font = Font(name="Calibri", size=10, bold=True, color=s_fg)
                 cell.alignment = Alignment(horizontal="center", vertical="center")
 
             # Response category column styling
-            if col_idx == 13 and resp_category in RESPONSE_STYLES:
+            if col_idx == 14 and resp_category in RESPONSE_STYLES:
                 r_bg, r_fg = RESPONSE_STYLES[resp_category]
                 cell.fill = PatternFill(start_color=r_bg, end_color=r_bg, fill_type="solid")
                 cell.font = Font(name="Calibri", size=10, bold=True, color=r_fg)

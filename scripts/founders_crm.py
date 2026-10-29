@@ -35,54 +35,11 @@ import founder_discovery
 import email_drafter
 import fact_guard
 import tracker
+import project_matcher
 
 
-def get_high_converting_cold_mail(company: str, role_title: str, recipient_email: str, profile: Dict[str, Any]) -> Dict[str, str]:
-    """
-    Elite Cold Email Template built from Kishor Kumar Paroi's verified Resume:
-    - Founder @ KoomAI + RUET CSE Alum
-    - Forward Deployed AI Engineer (Production RAG < 35ms, Agent Mesh, MLOps)
-    - Full-Stack & Big Data Capabilities (vLLM, Rust SIMD, Databricks, Snowflake, Azure/AWS/GCP, Kubernetes)
-    """
-    subject = f"{role_title} (Remote) @ {company} — AI Systems Architect & Founder Background"
-
-    body = f"""Hi {company} Founding & Engineering Team,
-
-I've been following {company}'s trajectory and saw your open {role_title} role. Given your mission, I wanted to reach out directly.
-
-I am a Remote AI Systems Architect, former Startup Founder (KoomAI — enterprise video intelligence), and Forward Deployed AI Engineer (phi0.ai Europe / RUET CSE) operating globally across US/EU/APAC timezones. I specialize in production GenAI inference, high-scale agent orchestration, and distributed cloud systems:
-
-• Sub-35ms Hybrid RAG & Re-ranking: Engineered hybrid dense/sparse vector pipelines (Qdrant + BM25) with local FlashRank ONNX re-ranking, delivering high concurrency under strict latency budgets.
-• 24/7 Autonomous Multi-Agent Mesh: Built production agentic loops with LangGraph and local open models (NVIDIA Nemotron-70B, Gemma-2) protected by programmatic zero-hallucination fact guards and NeMo guardrails.
-• High-Throughput Inference & Fine-Tuning: Hands-on fine-tuning (QLoRA, RSLoRA, DPO), vLLM / TensorRT-LLM serving, and Rust SIMD edge pre-filters reducing compute latency by over 40%.
-• Enterprise Big Data & Cloud Native: Production lakehouse pipelines across Databricks, Snowflake, PySpark, Kafka, and Azure Synapse, deployed on AWS EKS / GCP GKE with ArgoCD GitOps and zero-trust DevSecOps.
-
-I’d love to learn about the architectural bottlenecks {company} is tackling this quarter and explore how my full-stack AI engineering background can accelerate your production deliverables.
-
-Would you be open to a brief 15-minute introductory call next week?
-
-Live Platform & Architectures:
-• Portfolio & Interactive macOS UI: https://kishor.tech (3D: https://3d.kishor.tech)
-• Codebase & Open Architecture Blueprints: https://github.com/KishorKumarParoi
-• Startup Platform: https://koom.kishor.tech
-
-Looking forward to connecting!
-
-Best regards,
-
-Kishor Kumar Paroi
-AI Systems Architect & Founder @ KoomAI
-B.Sc. in Computer Science & Engineering (RUET)
-Email: kishor.ruet.cse@gmail.com
-WhatsApp / Mobile: +880 1724-714156
-LinkedIn: https://linkedin.com/in/kishor-kumar-paroi-b06344166
-"""
-    return {
-        "to": recipient_email,
-        "subject": subject,
-        "body": body,
-        "mailto_url": email_drafter.make_mailto_link(recipient_email, subject, body)
-    }
+def get_high_converting_cold_mail(company: str, role_title: str, recipient_email: str, profile: Dict[str, Any], snippet: str = "") -> Dict[str, str]:
+    return project_matcher.generate_curated_cold_email(company, role_title, recipient_email, snippet)
 
 
 def load_smtp_config() -> Dict[str, str]:
@@ -285,19 +242,19 @@ def run_crm_discovery_and_dispatch(batch_count: int = 20, send_live: bool = Fals
                 msg["Subject"] = pitch["subject"]
                 msg.attach(MIMEText(pitch["body"], "plain"))
 
-                # Attach BOTH Resumes
+                # Attach BOTH Resumes (Primary Visual 1-Page + Single Column ATS)
                 from email.mime.application import MIMEApplication
-                p1 = BASE_DIR.parent / "simple_resume.pdf"
-                p2 = BASE_DIR.parent / "full_comprehensive_resume.pdf"
+                p1 = BASE_DIR.parent / "resume.pdf" if (BASE_DIR.parent / "resume.pdf").exists() else BASE_DIR.parent / "simple_resume.pdf"
+                p2 = BASE_DIR.parent / "resume_single_column.pdf" if (BASE_DIR.parent / "resume_single_column.pdf").exists() else BASE_DIR.parent / "full_comprehensive_resume.pdf"
                 if p1.exists():
                     with open(p1, "rb") as fp:
                         a1 = MIMEApplication(fp.read(), _subtype="pdf")
-                        a1.add_header("Content-Disposition", "attachment", filename="Kishor_Kumar_Paroi_1Page_ATS_Resume.pdf")
+                        a1.add_header("Content-Disposition", "attachment", filename="Kishor_Kumar_Paroi_1Page_Visual_Resume.pdf")
                         msg.attach(a1)
                 if p2.exists():
                     with open(p2, "rb") as fp:
                         a2 = MIMEApplication(fp.read(), _subtype="pdf")
-                        a2.add_header("Content-Disposition", "attachment", filename="Kishor_Kumar_Paroi_Comprehensive_Portfolio_Resume.pdf")
+                        a2.add_header("Content-Disposition", "attachment", filename="Kishor_Kumar_Paroi_Single_Column_ATS_Resume.pdf")
                         msg.attach(a2)
 
                 smtp_conn.send_message(msg)
