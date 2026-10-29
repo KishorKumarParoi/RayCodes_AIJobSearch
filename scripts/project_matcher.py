@@ -251,6 +251,8 @@ I am an AI Systems Architect & Forward Deployed Engineer (Founder @ KoomAI • R
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 📚 COMPLETE 15-PROJECT PRODUCTION INDEX & RESUMES:
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+• 🌐 [ 𝒦ᵀ ] kishor.tech: https://kishor.tech (macOS Interactive Web OS)
+• 𝕏 Profile: https://x.com/Mr_paroi
 • Master GitHub Technical Showcase (All 15 Projects): https://github.com/KishorKumarParoi#1-flagship-technical-projects-1---15
 • 38-Module AI Systems Engineering Blueprints: https://github.com/KishorKumarParoi/AI-Engineering
 • 📄 1-Page Visual Resume (PDF): https://kishor.tech/resume.pdf
@@ -276,6 +278,8 @@ Warm regards,
 Kishor Kumar Paroi
 Principal AI Systems Architect | Founder @ KoomAI
 B.Sc. in Computer Science & Engineering (RUET)
+🌐 kishor.tech (Live macOS Workstation): https://kishor.tech
+𝕏 Profile: https://x.com/Mr_paroi | GitHub: https://github.com/KishorKumarParoi
 Email: kishor.ruet.cse@gmail.com | WhatsApp: +8801724714156
 LinkedIn: https://linkedin.com/in/kishor-kumar-paroi-b06344166
 """
@@ -321,6 +325,40 @@ LinkedIn: https://linkedin.com/in/kishor-kumar-paroi-b06344166
     <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; line-height: 1.6; color: #1e293b; background-color: #f8fafc; margin: 0; padding: 20px;">
         <div style="max-width: 680px; margin: 0 auto; background-color: #ffffff; border-radius: 12px; border: 1px solid #e2e8f0; padding: 28px; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
             
+            <!-- kishor.tech Brand Identity Header (X & Insta Squircle Aesthetic) -->
+            <div style="background: #090a0f; border: 1px solid #1e293b; border-radius: 10px; padding: 12px 16px; margin-bottom: 22px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <!-- kishor.tech Squircle Logo (X / Insta Aesthetic) -->
+                    <a href="https://kishor.tech" style="text-decoration: none; display: inline-flex; align-items: center; justify-content: center; width: 36px; height: 36px; background: #000000; border: 1.5px solid #334155; border-radius: 9px; box-shadow: 0 3px 8px rgba(0,0,0,0.5); text-align: center;">
+                        <span style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 18px; font-weight: 900; color: #ffffff; letter-spacing: -1.2px;">𝒦ᵀ</span>
+                    </a>
+                    <div>
+                        <div style="display: flex; align-items: center; gap: 6px;">
+                            <a href="https://kishor.tech" style="font-size: 15px; font-weight: 800; color: #f8fafc; text-decoration: none; letter-spacing: -0.2px;">
+                                kishor.tech
+                            </a>
+                            <span style="background: rgba(56, 189, 248, 0.15); border: 1px solid rgba(56, 189, 248, 0.4); color: #38bdf8; font-size: 9px; font-weight: 700; padding: 1px 5px; border-radius: 3px; text-transform: uppercase;">LIVE OS</span>
+                        </div>
+                        <div style="font-size: 11px; color: #94a3b8;">
+                            macOS Desktop Portfolio &bull; 15 Enterprise AI Blueprints
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Social Connect Badges (X, GitHub, LinkedIn) -->
+                <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
+                    <a href="https://x.com/Mr_paroi" style="display: inline-flex; align-items: center; gap: 4px; background: #000000; color: #ffffff; text-decoration: none; padding: 4px 9px; border-radius: 5px; font-size: 11px; font-weight: 700; border: 1px solid #334155;">
+                        <span style="font-size: 12px; font-weight: 900;">𝕏</span> @Mr_paroi
+                    </a>
+                    <a href="https://github.com/KishorKumarParoi" style="display: inline-flex; align-items: center; gap: 4px; background: #1e293b; color: #ffffff; text-decoration: none; padding: 4px 9px; border-radius: 5px; font-size: 11px; font-weight: 700;">
+                        🐙 GitHub
+                    </a>
+                    <a href="https://linkedin.com/in/kishor-kumar-paroi-b06344166" style="display: inline-flex; align-items: center; gap: 4px; background: #0a66c2; color: #ffffff; text-decoration: none; padding: 4px 9px; border-radius: 5px; font-size: 11px; font-weight: 700;">
+                        💼 LinkedIn
+                    </a>
+                </div>
+            </div>
+
             <p style="font-size: 15px; margin-top: 0;">Hi <strong>{company}</strong> Founding & Engineering Team,</p>
             
             <p style="font-size: 14px; color: #334155;">
@@ -367,6 +405,8 @@ LinkedIn: https://linkedin.com/in/kishor-kumar-paroi-b06344166
             <div style="margin-top: 22px; padding: 14px 18px; background-color: #f1f5f9; border-radius: 8px; font-size: 13px;">
                 <strong style="color: #0f172a;">📚 Complete 15-Project Index & Live Credentials:</strong>
                 <div style="margin-top: 8px; display: flex; flex-wrap: wrap; gap: 8px;">
+                    <a href="https://kishor.tech" style="background-color: #000000; color: #ffffff; padding: 4px 10px; border-radius: 4px; text-decoration: none; font-size: 12px; border: 1px solid #334155;"><strong>𝒦ᵀ</strong> kishor.tech (Live OS)</a>
+                    <a href="https://x.com/Mr_paroi" style="background-color: #000000; color: #ffffff; padding: 4px 10px; border-radius: 4px; text-decoration: none; font-size: 12px; border: 1px solid #334155;"><strong>𝕏</strong> @Mr_paroi</a>
                     <a href="https://github.com/KishorKumarParoi#1-flagship-technical-projects-1---15" style="background-color: #0f172a; color: #ffffff; padding: 4px 10px; border-radius: 4px; text-decoration: none; font-size: 12px;">🐙 All 15 Projects on GitHub</a>
                     <a href="https://kishor.tech/resume.pdf" style="background-color: #641c26; color: #ffffff; padding: 4px 10px; border-radius: 4px; text-decoration: none; font-size: 12px;">📄 1-Page Visual Resume</a>
                     <a href="https://kishor.tech/resume_single_column.pdf" style="background-color: #1e293b; color: #ffffff; padding: 4px 10px; border-radius: 4px; text-decoration: none; font-size: 12px;">📑 2-Page ATS Dossier</a>
@@ -396,10 +436,19 @@ LinkedIn: https://linkedin.com/in/kishor-kumar-paroi-b06344166
 
             <!-- Signature -->
             <div style="margin-top: 26px; border-top: 1px solid #e2e8f0; padding-top: 16px; font-size: 13px; color: #475569;">
-                <strong style="font-size: 14px; color: #0f172a;">Kishor Kumar Paroi</strong><br>
+                <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
+                    <a href="https://kishor.tech" style="text-decoration: none; display: inline-flex; align-items: center; justify-content: center; width: 26px; height: 26px; background: #000000; border-radius: 6px; color: #ffffff; font-weight: 900; font-size: 13px; border: 1px solid #334155; text-align: center;">𝒦ᵀ</a>
+                    <strong style="font-size: 15px; color: #0f172a;">Kishor Kumar Paroi</strong>
+                </div>
                 Principal AI Systems Architect | Founder @ KoomAI<br>
                 B.Sc. in Computer Science & Engineering (RUET)<br>
-                <span style="color: #64748b;">Email: <a href="mailto:kishor.ruet.cse@gmail.com" style="color: #2563eb;">kishor.ruet.cse@gmail.com</a> | WhatsApp: +8801724714156 | <a href="https://linkedin.com/in/kishor-kumar-paroi-b06344166" style="color: #2563eb;">LinkedIn</a></span>
+                <div style="margin-top: 6px; color: #64748b;">
+                    <a href="https://kishor.tech" style="color: #0f172a; font-weight: 700; text-decoration: underline;">kishor.tech</a> &bull; 
+                    <a href="https://x.com/Mr_paroi" style="color: #0f172a; text-decoration: none; font-weight: 700;">𝕏 @Mr_paroi</a> &bull; 
+                    Email: <a href="mailto:kishor.ruet.cse@gmail.com" style="color: #2563eb;">kishor.ruet.cse@gmail.com</a> &bull; 
+                    WhatsApp: <a href="https://wa.me/8801724714156" style="color: #16a34a; font-weight: 600;">+8801724714156</a> &bull; 
+                    <a href="https://linkedin.com/in/kishor-kumar-paroi-b06344166" style="color: #0a66c2; font-weight: 600;">LinkedIn</a>
+                </div>
             </div>
 
         </div>
